@@ -1,0 +1,32 @@
+[project]
+name = "bappa-check"
+dynamic = ["version"]
+description = "Sanity-check your staged files, get blessed by an animated ASCII Ganesha on success."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [{ name = "ASHinarretable" }]
+dependencies = [
+    "rich>=13",
+]
+
+[project.optional-dependencies]
+yaml = ["pyyaml"]
+dev = ["pytest", "pytest-cov", "ruff", "build", "twine"]
+
+[project.scripts]
+bappa-check = "bappa_check.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/ASHinarretable/bappa-check"
+Repository = "https://github.com/ASHinarretable/bappa-check"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/bappa_check/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bappa_check"]
