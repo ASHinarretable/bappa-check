@@ -1,0 +1,8 @@
+- id: bappa-check
+  name: Bappa Check
+  description: Sanity-checks staged files, blesses them with ASCII Ganesha on success.
+  entry: bappa-check
+  language: python
+  pass_filenames: true
+  require_serial: true
+  verbose: true

@@ -12,7 +12,7 @@ dependencies = [
 
 [project.optional-dependencies]
 yaml = ["pyyaml"]
-dev = ["pytest", "pytest-cov", "ruff", "build", "twine"]
+dev = ["pytest", "pytest-cov", "ruff", "build", "twine", "pre-commit"]
 
 [project.scripts]
 bappa-check = "bappa_check.cli:main"

@@ -1,0 +1,28 @@
+# Dogfooding: this repo checks itself with its own hook.
+#
+# Uses `repo: local` for now since this repo isn't pushed/tagged on GitHub
+# yet. Once it is (and a `vX.Y.Z` tag exists), switch to:
+#
+#   repos:
+#     - repo: https://github.com/ASHinarretable/bappa-check
+#       rev: v0.1.0
+#       hooks:
+#         - id: bappa-check
+#
+# which is also exactly what other projects would put in their own
+# .pre-commit-config.yaml to use bappa-check.
+repos:
+  - repo: local
+    hooks:
+      - id: bappa-check
+        name: Bappa Check
+        entry: bappa-check
+        language: system
+        pass_filenames: true
+        require_serial: true
+        verbose: true
+        # tests/ deliberately contains fake secrets (to test the secrets
+        # detector) and PLAN.md documents the exact patterns we check for --
+        # both are expected to "fail" a real secrets scan. Standard practice:
+        # every secret-scanner excludes its own test fixtures from itself.
+        exclude: ^(tests/.*|PLAN\.md)$
