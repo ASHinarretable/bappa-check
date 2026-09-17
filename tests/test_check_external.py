@@ -33,6 +33,22 @@ def test_parses_ruff_concise_output(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     assert "F401" in findings[0].message
 
 
+def test_clean_ruff_exit_zero_yields_no_findings_even_with_stdout_text(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Regression: real ruff prints "All checks passed!" to stdout on a clean
+    # run (exit 0) -- that text must never be mistaken for a finding.
+    path = tmp_path / "f.py"
+    path.write_text("import os\n\nos\n", encoding="utf-8")
+    monkeypatch.setattr(external.shutil, "which", lambda name: "/usr/bin/ruff" if name == "ruff" else None)
+
+    def fake_run(*args, **kwargs):
+        return subprocess.CompletedProcess(args=args, returncode=0, stdout="All checks passed!\n", stderr="")
+
+    monkeypatch.setattr(external.subprocess, "run", fake_run)
+    assert external.run([path]) == []
+
+
 def test_survives_ruff_timeout(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     path = tmp_path / "f.py"
     path.write_text("import os\n", encoding="utf-8")

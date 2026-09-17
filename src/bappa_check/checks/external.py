@@ -33,6 +33,13 @@ def _run_ruff(py_files: list[Path]) -> list[Finding]:
     except (OSError, subprocess.TimeoutExpired):
         return []
 
+    # ruff's contract: 0 = clean, 1 = violations found, 2 = tool error. On a
+    # clean run it still prints "All checks passed!" to stdout, so the exit
+    # code -- not "is stdout non-empty" -- is what tells us whether there's
+    # anything to report.
+    if result.returncode == 0:
+        return []
+
     findings: list[Finding] = []
     for line in result.stdout.splitlines():
         line = line.strip()
@@ -57,6 +64,10 @@ def _run_eslint(js_files: list[Path], root: Path | None) -> list[Finding]:
             check=False,  # eslint exits non-zero when it finds issues — that's expected, not an error
         )
     except (OSError, subprocess.TimeoutExpired):
+        return []
+
+    # Same contract as ruff: 0 = clean. Trust the exit code, not stdout content.
+    if result.returncode == 0:
         return []
 
     findings: list[Finding] = []
