@@ -62,3 +62,64 @@ def test_badges_are_pure_ascii_too() -> None:
     console.print(art.failure_badge())
     output = console.export_text()
     assert all(ord(c) < 128 for c in output)
+
+
+# --- Animation frames --------------------------------------------------
+
+
+def _non_animated_row_indexes() -> set[int]:
+    """Rows every frame must reproduce byte-for-byte from BASE_FRAME."""
+    animated = set(art._BLANK_ROWS) | {art._EYE_ROW}
+    return set(range(art.FRAME_HEIGHT)) - animated
+
+
+def test_build_animation_frames_returns_multiple_frames() -> None:
+    frames = art.build_animation_frames()
+    assert len(frames) >= 8
+
+
+def test_every_frame_has_the_same_shape_as_base_frame() -> None:
+    for frame in art.build_animation_frames():
+        assert len(frame) == art.FRAME_HEIGHT
+        assert all(len(line) == art.FRAME_WIDTH for line in frame)
+
+
+def test_animation_never_touches_the_actual_figure() -> None:
+    # Only the blank margin rows (sparkle) and the eye row (blink) may
+    # differ from BASE_FRAME -- the figure itself must be untouched in
+    # every single frame, so the user's supplied art is never corrupted.
+    untouchable = _non_animated_row_indexes()
+    for frame in art.build_animation_frames():
+        for row in untouchable:
+            assert frame[row] == art.BASE_FRAME[row], f"row {row} was modified"
+
+
+def test_first_and_last_frame_are_the_base_frame() -> None:
+    frames = art.build_animation_frames()
+    assert frames[0] == art.BASE_FRAME
+    assert frames[-1] == art.BASE_FRAME
+
+
+def test_eye_blink_frame_is_present_and_only_changes_eye_columns() -> None:
+    frames = art.build_animation_frames()
+    blink_frames = [f for f in frames if f[art._EYE_ROW] != art.BASE_FRAME[art._EYE_ROW]]
+    assert len(blink_frames) == 1
+    blink_row = blink_frames[0][art._EYE_ROW]
+    base_row = art.BASE_FRAME[art._EYE_ROW]
+    for col, (a, b) in enumerate(zip(blink_row, base_row)):
+        if col in art._EYE_COLUMNS:
+            assert a == "-"
+        else:
+            assert a == b
+
+
+def test_sparkle_frames_only_add_a_single_asterisk_to_a_blank_row() -> None:
+    for frame in art.build_animation_frames():
+        for row in art._BLANK_ROWS:
+            line = frame[row]
+            if line == art.BASE_FRAME[row]:
+                continue
+            # Exactly one character differs, and it's a "*" replacing a space.
+            diffs = [i for i, (a, b) in enumerate(zip(line, art.BASE_FRAME[row])) if a != b]
+            assert len(diffs) == 1
+            assert line[diffs[0]] == "*"

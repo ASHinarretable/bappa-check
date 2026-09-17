@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 import argparse
-import os
 import sys
 from pathlib import Path
 
 from rich.console import Console
 from rich.table import Table
 
-from bappa_check import __version__, art, git, hook
+from bappa_check import __version__, animate, art, git, hook
 from bappa_check.checks import CheckResult, Severity, overall_passed, run_all
 
 _STATUS_LABEL = {Severity.INFO: "info", Severity.WARN: "WARN", Severity.FAIL: "FAIL"}
@@ -58,12 +57,6 @@ def _resolve_files(args: argparse.Namespace) -> list[Path] | None:
     if root is None:
         return None
     return git.all_tracked_files() if args.all else git.staged_files()
-
-
-def _use_animation(args: argparse.Namespace) -> bool:
-    if args.no_anim or os.environ.get("BAPPA_NO_ANIM"):
-        return False
-    return sys.stdout.isatty()
 
 
 def _print_checklist(console: Console, results: list[CheckResult]) -> None:
@@ -128,21 +121,17 @@ def main(argv: list[str] | None = None) -> int:
     _print_checklist(console, results)
     console.print()
 
-    # Animation frames land in a follow-up (Phase 2 continued); for now this
-    # always renders the static frame. --no-anim / BAPPA_NO_ANIM / a non-TTY
-    # are already respected here so wiring in real motion later needs no
-    # changes on the caller's side.
-    _use_animation(args)
+    do_animate = animate.should_animate(args.no_anim)
 
     if passed:
-        console.print(art.ganesha())
+        animate.play(console, style="bold green", animate=do_animate)
         console.print(art.success_badge())
     else:
         fail_count = sum(1 for r in results for f in r.findings if f.severity == Severity.FAIL)
         hint = f"fix the {fail_count} issue{'s' if fail_count != 1 else ''} above"
         if not args.strict and any(r.severity == Severity.WARN for r in results):
             hint += ", or run without --strict"
-        console.print(art.ganesha(style="bold red"))
+        animate.play(console, style="bold red", animate=do_animate)
         console.print(art.failure_badge(hint))
 
     return 0 if passed else 1
