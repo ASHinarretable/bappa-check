@@ -36,7 +36,9 @@ def install(repo_root: Path) -> tuple[bool, str]:
                 f"yourself, or remove it first."
             )
 
-    hook_path.write_text(HOOK_SCRIPT, encoding="utf-8", newline="\n")
+    # Path.write_text()'s `newline` kwarg needs Python 3.10+; open() has always had it.
+    with open(hook_path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(HOOK_SCRIPT)
     try:
         mode = hook_path.stat().st_mode
         hook_path.chmod(mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)

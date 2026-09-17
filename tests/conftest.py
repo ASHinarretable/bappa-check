@@ -17,7 +17,9 @@ def git_repo(tmp_path: Path) -> Path:
 
 def write(path: Path, content: str) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8", newline="\n")
+    # Path.write_text()'s `newline` kwarg needs Python 3.10+; open() has always had it.
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(content)
     return path
 
 
