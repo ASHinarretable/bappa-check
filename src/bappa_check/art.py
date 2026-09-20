@@ -1,10 +1,14 @@
-"""ASCII Ganesha artwork — the reference frame the user supplied.
+"""ASCII Ganesha artwork — derived from the reference frame the user supplied.
 
 Kept as pure ASCII (checked: no non-ASCII bytes, no BOM) so it renders
 identically on Windows cmd/PowerShell, macOS Terminal, and CI logs.
 Every line is padded to the same width so it centers cleanly in a
-Rich Panel and so future animation frames (trunk sway, eye blink,
-sparkle ring) can be derived from it without jitter.
+Rich Panel and so animation frames (sparkle, eye blink) can be derived
+from it without jitter.
+
+Cropped from the original reference at the user's request: the tall
+crown spike above the brow line and the two stray dots below the trunk
+were trimmed for a more compact figure.
 """
 
 from __future__ import annotations
@@ -13,15 +17,10 @@ from rich import box
 from rich.align import Align
 from rich.console import RenderableType
 from rich.panel import Panel
+from rich.text import Text
 
 BASE_FRAME: list[str] = [
     '                                            ',
-    '                     ..                     ',
-    '                    -===                    ',
-    '                .::-==+=--:.                ',
-    '              :-----:.::-----.              ',
-    '             ----:::-::-::----:             ',
-    '            -=--:--=++++=-------            ',
     '           .-=:-=++++++++++=-:=-.           ',
     '            :-**=:.      .:=**-.            ',
     '        -#%%%#**:.  .::.  .:#*#%%%#.        ',
@@ -39,7 +38,6 @@ BASE_FRAME: list[str] = [
     '                                            ',
     '                                            ',
     '                                            ',
-    '           .      .                         ',
 ]
 
 FRAME_WIDTH = max(len(line) for line in BASE_FRAME)
@@ -62,7 +60,7 @@ def render_frame(frame: list[str] | None = None) -> str:
 # so this keeps working if the art file above ever changes.
 
 _BLANK_ROWS = [i for i, line in enumerate(BASE_FRAME) if not line.strip()]
-_EYE_ROW = 8
+_EYE_ROW = 2
 _EYE_COLUMNS = [i for i, ch in enumerate(BASE_FRAME[_EYE_ROW]) if ch == "*"]
 _SPARKLE_COLUMNS = [10, 18, 26, 34]
 
@@ -103,8 +101,16 @@ def build_animation_frames() -> list[list[str]]:
 
 
 def ganesha(frame: list[str] | None = None, *, style: str = "bold green") -> RenderableType:
-    """The Ganesha figure, centered, in the given rich style."""
-    return Align.center(render_frame(frame), style=style)
+    """The Ganesha figure, at its natural (compact) size.
+
+    Deliberately a plain Text, not an Align -- Align pads out to fill
+    *all* available console width to position its content within that
+    space (that's what alignment means), even when given a fixed inner
+    width. On a wide terminal that turns into huge leading whitespace
+    per line and the figure looks enormous. Text has no such fill
+    behavior: it prints at its own natural size, full stop.
+    """
+    return Text(render_frame(frame), style=style)
 
 
 def success_badge() -> RenderableType:
