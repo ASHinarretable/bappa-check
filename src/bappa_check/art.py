@@ -1,14 +1,10 @@
-"""ASCII Ganesha artwork — derived from the reference frame the user supplied.
+"""ASCII Ganesha artwork — the reference frame the user supplied.
 
 Kept as pure ASCII (checked: no non-ASCII bytes, no BOM) so it renders
 identically on Windows cmd/PowerShell, macOS Terminal, and CI logs.
 Every line is padded to the same width so it centers cleanly in a
 Rich Panel and so animation frames (sparkle, eye blink) can be derived
 from it without jitter.
-
-Cropped from the original reference at the user's request: the tall
-crown spike above the brow line and the two stray dots below the trunk
-were trimmed for a more compact figure.
 """
 
 from __future__ import annotations
@@ -21,6 +17,12 @@ from rich.text import Text
 
 BASE_FRAME: list[str] = [
     '                                            ',
+    '                     ..                     ',
+    '                    -===                    ',
+    '                .::-==+=--:.                ',
+    '              :-----:.::-----.              ',
+    '             ----:::-::-::----:             ',
+    '            -=--:--=++++=-------            ',
     '           .-=:-=++++++++++=-:=-.           ',
     '            :-**=:.      .:=**-.            ',
     '        -#%%%#**:.  .::.  .:#*#%%%#.        ',
@@ -38,6 +40,7 @@ BASE_FRAME: list[str] = [
     '                                            ',
     '                                            ',
     '                                            ',
+    '           .      .                         ',
 ]
 
 FRAME_WIDTH = max(len(line) for line in BASE_FRAME)
@@ -60,7 +63,7 @@ def render_frame(frame: list[str] | None = None) -> str:
 # so this keeps working if the art file above ever changes.
 
 _BLANK_ROWS = [i for i, line in enumerate(BASE_FRAME) if not line.strip()]
-_EYE_ROW = 2
+_EYE_ROW = 8
 _EYE_COLUMNS = [i for i, ch in enumerate(BASE_FRAME[_EYE_ROW]) if ch == "*"]
 _SPARKLE_COLUMNS = [10, 18, 26, 34]
 
