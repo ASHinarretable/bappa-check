@@ -8,31 +8,7 @@ markers, hardcoded secrets, oversized files, syntax errors, debug leftovers,
 and more. Pass, and you get blessed by an animated ASCII Ganesha with a green
 **BAPPA APPROVED** badge. Fail, and the commit is blocked until you fix it.
 
-```
-                     ..
-                    -===
-                .::-==+=--:.
-              :-----:.::-----.
-             ----:::-::-::----:
-            -=--:--=++++=-------
-           .-=:-=++++++++++=-:=-.
-            :-**=:.      .:=**-.
-        -#%%%#**:.  .::.  .:#*#%%%#.
-      =#**#++*%*-***----***=*%*++#*##:
-        --*+=+#*:+*=----=*+:+#+=+*-
-         ==*+=#*.::......-:.*#=+*=-
-          :=***#+*-......-*+#***=.
-            -+++=-..::-:.:-=**+-
-              =  .+:-===-*:  +
-                   ====-:
-                   -+*+-:   ..
-                    =####*##*#*-
-                       :-.  :-=*.
-                             +=
-+----------------------------------------+
-| BAPPA APPROVED -- Ganpati Bappa Morya! |
-+----------------------------------------+
-```
+![bappa-check demo](demo/demo.gif)
 
 ## Install
 
@@ -135,6 +111,13 @@ pre-commit run --all-files --verbose  # dogfood the hook on this repo itself
 ```
 
 CI runs the full suite across Ubuntu/macOS/Windows on Python 3.9 and 3.12 on every push.
+
+The demo GIF above is rendered programmatically (no terminal recorder needed) from the real checklist output and the real `bappa_check.art` animation frames — see [`demo/render_gif.py`](demo/render_gif.py). Regenerate it with:
+
+```bash
+pip install pillow
+python demo/render_gif.py
+```
 
 ## License
 
