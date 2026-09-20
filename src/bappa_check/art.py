@@ -38,9 +38,6 @@ BASE_FRAME: list[str] = [
     '                       :-.  :-=*.           ',
     '                             +=             ',
     '                                            ',
-    '                                            ',
-    '                                            ',
-    '           .      .                         ',
 ]
 
 FRAME_WIDTH = max(len(line) for line in BASE_FRAME)
