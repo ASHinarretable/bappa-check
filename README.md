@@ -1,6 +1,7 @@
 # bappa-check
 
 [![CI](https://github.com/ASHinarretable/bappa-check/actions/workflows/ci.yml/badge.svg)](https://github.com/ASHinarretable/bappa-check/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/bappa-check.svg)](https://pypi.org/project/bappa-check/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A fast, zero-config sanity check for your staged files — merge-conflict
@@ -12,17 +13,11 @@ and more. Pass, and you get blessed by an animated ASCII Ganesha with a green
 
 ## Install
 
-Not yet on PyPI (soon — track [issues](https://github.com/ASHinarretable/bappa-check/issues) or just try the command below, it'll start working the moment it's published). Until then, install straight from GitHub:
-
-```bash
-pip install git+https://github.com/ASHinarretable/bappa-check.git
-```
-
-Once published:
-
 ```bash
 pip install bappa-check
 ```
+
+(Also on [PyPI](https://pypi.org/project/bappa-check/). To install straight from source instead: `pip install git+https://github.com/ASHinarretable/bappa-check.git`.)
 
 ## Usage
 
