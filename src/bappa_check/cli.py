@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -86,6 +87,28 @@ def _print_checklist(console: Console, results: list[CheckResult]) -> None:
             console.print(f"  {finding.format()}")
 
 
+def _make_console() -> Console:
+    """Build the Console bappa-check prints through.
+
+    Rich's own auto-detection (`Console()` with no arguments) can be overly
+    conservative about what counts as a color-capable terminal -- observed
+    directly: a real interactive session with TERM=xterm-256color still had
+    Rich report color_system=None. If stdout genuinely is a TTY, trust that
+    over Rich's heuristics and force color on (Rich still separately
+    respects NO_COLOR, and still picks the right rendering path for a
+    legitimately legacy Windows console -- forcing terminal mode doesn't
+    change either of those). Also force it under `pre-commit`/CI, whose
+    log viewers commonly render ANSI even though the pipe itself isn't a
+    TTY, matching what the original design called for.
+    """
+    try:
+        is_tty = sys.stdout.isatty()
+    except (AttributeError, ValueError):
+        is_tty = False
+    running_in_ci = bool(os.environ.get("PRE_COMMIT") or os.environ.get("CI"))
+    return Console(force_terminal=True if (is_tty or running_in_ci) else None)
+
+
 def _run_hook_command(args: argparse.Namespace, console: Console) -> int:
     root = git.repo_root()
     if root is None:
@@ -99,7 +122,7 @@ def _run_hook_command(args: argparse.Namespace, console: Console) -> int:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    console = Console()
+    console = _make_console()
 
     if args.install_hook or args.uninstall_hook:
         return _run_hook_command(args, console)
